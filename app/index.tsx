@@ -1,12 +1,12 @@
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Text} from 'react-native';
-
-import { Board } from '@/components/Board/Board';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { runOnJS } from 'react-native-reanimated';
+
 import { Chess } from 'chess.js';
-import { useCallback, useState } from 'react';
+import { Board } from '@/components/Board/Board';
 import { useConst } from '@/hooks/useConst';
 import { Piece } from '@/components/Piece/Piece';
-import { runOnJS } from 'react-native-reanimated';
 import { SIZE, width } from '@/constants/Size';
 
 export default function HomeScreen() {
@@ -39,10 +39,10 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.root}>
       <View style={styles.result}>
-        {chess.isCheckmate() ? <Text style={{fontSize: 30}}>{chess.turn() === 'w' ? '0-1' : '1-0'}</Text>
+        {chess.isCheckmate() ? <Text style={styles.text}>{chess.turn() === 'w' ? '0-1' : '1-0'}</Text>
          : null}
         {chess.isDraw() ? (
-          <Text style={{fontSize: 30}}>1/2-1/2</Text>
+          <Text style={styles.text}>1/2-1/2</Text>
         ) : null}
       </View>
       <View style={styles.board}>
@@ -81,5 +81,8 @@ const styles = StyleSheet.create({
   result: {
     alignContent: 'center',
     alignItems: 'center',
+  },
+  text: {
+    fontSize: 30,
   },
 });

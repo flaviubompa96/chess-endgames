@@ -62,7 +62,7 @@ export const Board = () => {
 
 const styles = StyleSheet.create({
     root: {
-        flex: 1
+        flex: 1,
     },
     row: {
         flex: 1,
