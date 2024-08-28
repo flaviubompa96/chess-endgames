@@ -1,15 +1,16 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Gesture, GestureHandlerRootView, GestureDetector } from "react-native-gesture-handler";
 
 import { PIECES } from "@/constants/Pieces";
 import { Vector } from "react-native-redash";
 import { toPosition } from "@/utils/toPosition";
-import { SIZE, width } from "@/constants/Size";
+import { SIZE } from "@/constants/Size";
+import { PieceName } from "@/constants/types";
 
 interface PieceProps {
-    id: Piece;
+    id: PieceName;
     position: Vector;
     handleMove: (from: string, to: string, resetPosition: () => void) => void
 };
