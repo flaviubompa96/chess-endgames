@@ -1,14 +1,13 @@
-import { StyleSheet, Dimensions, View, Text} from 'react-native';
+import { StyleSheet, View, Text} from 'react-native';
 
 import { Board } from '@/components/Board/Board';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Chess } from 'chess.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useConst } from '@/hooks/useConst';
-import { Piece, SIZE } from '@/components/Piece/Piece';
+import { Piece } from '@/components/Piece/Piece';
 import { runOnJS } from 'react-native-reanimated';
-
-const { width } = Dimensions.get("window");
+import { SIZE, width } from '@/constants/Size';
 
 export default function HomeScreen() {
   //const chess = useConst(() => new Chess('1K6/7r/1k6/8/8/8/8/8 b KQkq - 0 1'))
@@ -58,8 +57,6 @@ export default function HomeScreen() {
                       id={`${square.color}${square.type}`} 
                       position={{x: j * SIZE, y: i * SIZE}}
                       key={`${square.color}${square.type}${j}${i}`}
-                      chess={chess}
-                      setGameState={setGameState}
                       handleMove={handleMove}
                   />
               }
@@ -84,5 +81,5 @@ const styles = StyleSheet.create({
   result: {
     alignContent: 'center',
     alignItems: 'center',
-  }
+  },
 });
