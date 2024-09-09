@@ -1,15 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Text} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { runOnJS } from 'react-native-reanimated';
 
-import { Chess, Color, Move, PieceSymbol, Square } from 'chess.js';
+import { Chess, Move, PieceSymbol, Square } from 'chess.js';
 import { Board } from '@/components/Board/Board';
 import { useConst } from '@/hooks/useConst';
 import { Piece } from '@/components/Piece/Piece';
 import { SIZE, width } from '@/constants/Size';
 import { PromotionDialog } from '@/components/PromotionDialog/PromotionDialog';
-import { Game } from '@/constants/types';
+import { Game, HighilghtedPiece } from '@/constants/types';
 import { getDifferentColor } from '@/utils/getDifferentColor';
 
 export default function HomeScreen() {
@@ -21,6 +21,8 @@ export default function HomeScreen() {
   });
   const [isPromotiong, setIsPromoting] = useState(false);
   const [currentMove, setCurrentMove] = useState<Move>();
+  const [highlightedPiece, setHighlightedPiece] = useState<HighilghtedPiece | null>(null);
+  const [possibleMoves, setPossibleMoves] = useState<string[]>([]);
 
   const handleMove = useCallback((from: string, to: string, resetPosition: () => void) => {
     try {
@@ -38,6 +40,8 @@ export default function HomeScreen() {
             board: chess.board(),
           });
         }
+        setHighlightedPiece(null);
+        setPossibleMoves([]);
       } else {
         runOnJS(resetPosition)();
       }
@@ -56,6 +60,13 @@ export default function HomeScreen() {
     }
     setIsPromoting(false);
   }
+
+  useEffect(() => {
+    if(highlightedPiece) {
+      const moves = chess.moves({piece: highlightedPiece.piece as PieceSymbol, square: highlightedPiece.from as Square});
+      setPossibleMoves(moves);
+    }
+  }, [highlightedPiece]);
   
   return (
     <SafeAreaView style={styles.root}>
@@ -67,7 +78,13 @@ export default function HomeScreen() {
         ) : null}
       </View>
       <View style={styles.board}>
-        <Board/>
+        <Board 
+          highlightedPiece={highlightedPiece}
+          setHighlightedPiece={setHighlightedPiece}
+          possibleMoves={possibleMoves} 
+          setPossibleMoves={setPossibleMoves}
+          handleMove={handleMove}
+        />
         {
           gameState.board.map((row, i) => row.map((square, j) => {
               if (square === null) {
@@ -79,6 +96,9 @@ export default function HomeScreen() {
                       position={{x: j * SIZE, y: i * SIZE}}
                       key={`${square.color}${square.type}${j}${i}`}
                       handleMove={handleMove}
+                      setHighlightedPiece={setHighlightedPiece}
+                      highlightedPiece={highlightedPiece}
+                      possibleMoves={possibleMoves}
                   />
               }
           }))

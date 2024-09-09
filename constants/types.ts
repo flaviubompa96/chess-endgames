@@ -12,4 +12,8 @@ export type Game = {
       type: PieceSymbol;
       color: Color;
   } | null)[][];
-  }
+};
+export type HighilghtedPiece = {
+    piece: string;
+    from: string;
+}
