@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     square: {
-        padding: 4,
+        padding: 1,
         justifyContent: 'space-between',
     },
 });

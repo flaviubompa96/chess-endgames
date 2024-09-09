@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
     },
     piece: {
-        width: SIZE,
-        height: SIZE,
+        width: SIZE - 2,
+        height: SIZE - 2,
     },
 });
