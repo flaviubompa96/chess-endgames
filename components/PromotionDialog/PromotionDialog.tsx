@@ -1,13 +1,15 @@
-import { PIECES } from "@/constants/Pieces";
-import { BlackPiece, WhitePiece } from "@/constants/types";
 import React from "react";
 import { View, Image, StyleSheet, TouchableOpacity, Text } from "react-native";
 
+import { PIECES } from "@/constants/Pieces";
+import { BlackPiece, WhitePiece } from "@/constants/types";
+import { useGame } from "@/hooks/useGame";
+
 interface Props {
     color: 'w' | 'b',
-    setPromotionPiece: (value: string) => void
 }
-export const PromotionDialog = ({color, setPromotionPiece}: Props) => {
+export const PromotionDialog = ({ color }: Props) => {
+    const { handlePromotingPiece } = useGame();
     const pieces: WhitePiece[] | BlackPiece[] = color === 'w' ? ['bq', 'br', 'bn', 'bb'] : ['wq', 'wr', 'wn', 'wb'];
     return (
         <View style={styles.root}>
@@ -15,7 +17,7 @@ export const PromotionDialog = ({color, setPromotionPiece}: Props) => {
             <View style={styles.piecesContainer}>
                 {pieces.map(piece => 
                     <TouchableOpacity 
-                        onPress={() => setPromotionPiece(piece)} 
+                        onPress={() => handlePromotingPiece(piece)} 
                         activeOpacity={0.8}
                         key={`promoting-${piece}`}
                     >

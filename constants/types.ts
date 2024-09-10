@@ -17,3 +17,8 @@ export type HighilghtedPiece = {
     piece: string;
     from: string;
 }
+export type BoardType = {
+    square: Square;
+    type: PieceSymbol;
+    color: Color;
+}

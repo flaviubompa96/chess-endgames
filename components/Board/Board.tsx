@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
-import { HighilghtedPiece } from "@/constants/types";
 import { runOnJS } from "react-native-reanimated";
+import { useGame } from "@/hooks/useGame";
 
 const colors = {
     WHITE: 'rgb(100, 133, 68)',
@@ -11,44 +11,24 @@ const colors = {
 
 interface RowProps {
     row: number;
-    highlightedPiece: HighilghtedPiece | null;
-    setHighlightedPiece: (value: HighilghtedPiece | null) => void;
-    possibleMoves: string[];
-    setPossibleMoves: (value: string[]) => void;
-    handleMove: (from: string, to: string, resetPosition: () => void) => void
 }
 
 interface SquareProps {
     row: number;
     col: number;
-    highlightedPiece: HighilghtedPiece | null;
-    setHighlightedPiece: (value: HighilghtedPiece | null) => void;
-    possibleMoves: string[];
-    setPossibleMoves: (value: string[]) => void;
-    handleMove: (from: string, to: string, resetPosition: () => void) => void;
 }
 
-interface BoardProps {
-    highlightedPiece: HighilghtedPiece | null;
-    setHighlightedPiece: (value: HighilghtedPiece | null) => void;
-    possibleMoves: string[];
-    setPossibleMoves: (value: string[]) => void;
-    handleMove: (from: string, to: string, resetPosition: () => void) => void;
-}
-
-const Square = ({ row, col, highlightedPiece, possibleMoves, handleMove, setHighlightedPiece, setPossibleMoves }: SquareProps) => {
+const Square = ({ row, col }: SquareProps) => {
+    const { highlightedPiece, handleMove, setHighlightedPiece, setPossibleMoves, checkPossibleMove } = useGame();
     const offset = row % 2 === 0 ? 1 : 0;
     const bgColor = (col + offset) % 2 === 0 ? colors.WHITE : colors.BLACK;
     const textColor = (col + offset) % 2 === 0 ? colors.BLACK : colors.WHITE;
     const colChar = String.fromCharCode('a'.charCodeAt(0) + col);
     const squareName = `${colChar}${8 - row}`;
-    const possibleMove = highlightedPiece?.piece === 'p' ? squareName : `${highlightedPiece?.piece.toLocaleUpperCase()}${squareName}`;
-    const possibleCapturingMove = highlightedPiece?.piece === 'p' ? `${highlightedPiece.from[0]}x${squareName}` : `${highlightedPiece?.piece.toLocaleUpperCase()}x${squareName}`;
-    const movesToCheck = [possibleMove, possibleCapturingMove, `${possibleMove}+`, `${possibleMove}#`, `${possibleCapturingMove}+`, `${possibleCapturingMove}#`];
+    const isPossibleMove = checkPossibleMove(squareName);
     const handlePress = () => {
         if(highlightedPiece) {
-            
-            if (movesToCheck.some(item => possibleMoves.includes(item))) {
+            if (isPossibleMove) {
                 runOnJS(handleMove)(highlightedPiece.from, squareName, () => {});
             }
             else {
@@ -68,7 +48,7 @@ const Square = ({ row, col, highlightedPiece, possibleMoves, handleMove, setHigh
                 fontWeight: '500', 
                 opacity: col === 0 ? 1 : 0
             }}>{8 -row}</Text>
-            {movesToCheck.some(item => possibleMoves.includes(item)) 
+            {isPossibleMove
                 ?   <View style={styles.circleRoot}>
                         <View style={styles.circle} />
                     </View>
@@ -84,24 +64,24 @@ const Square = ({ row, col, highlightedPiece, possibleMoves, handleMove, setHigh
     );
 };
 
-const Row = ({ row, highlightedPiece, possibleMoves, handleMove, setHighlightedPiece, setPossibleMoves }: RowProps) => {
+const Row = ({ row }: RowProps) => {
     return (
         <View style={styles.row}>
             {
                 new Array(8).fill(0).map((_, col) => (
-                    <Square row={row} col={col} key={col} highlightedPiece={highlightedPiece} possibleMoves={possibleMoves}  handleMove={handleMove} setHighlightedPiece={setHighlightedPiece} setPossibleMoves={setPossibleMoves} />
+                    <Square row={row} col={col} key={col} />
                 ))
             }
         </View>
     );
 };
 
-export const Board = ({highlightedPiece, setHighlightedPiece, possibleMoves, setPossibleMoves, handleMove}: BoardProps) => {
+export const Board = () => {
     return (
         <View style={styles.root}>
             {
                 new Array(8).fill(0).map((_, row) => (
-                    <Row key={row} row={row} highlightedPiece={highlightedPiece} possibleMoves={possibleMoves} handleMove={handleMove} setHighlightedPiece={setHighlightedPiece} setPossibleMoves={setPossibleMoves} />
+                    <Row key={row} row={row} />
                 ))
             }
         </View>

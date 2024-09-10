@@ -2,23 +2,21 @@ import React from "react";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { Gesture, GestureHandlerRootView, GestureDetector } from "react-native-gesture-handler";
+import { Vector } from "react-native-redash";
 
 import { PIECES } from "@/constants/Pieces";
-import { Vector } from "react-native-redash";
 import { toPosition } from "@/utils/toPosition";
 import { SIZE } from "@/constants/Size";
-import { HighilghtedPiece, PieceName } from "@/constants/types";
+import { PieceName } from "@/constants/types";
+import { useGame } from "@/hooks/useGame";
 
 interface PieceProps {
     id: PieceName;
     position: Vector;
-    handleMove: (from: string, to: string, resetPosition: () => void) => void;
-    highlightedPiece: HighilghtedPiece | null;
-    setHighlightedPiece: (value: HighilghtedPiece | null) => void;
-    possibleMoves: string[];
 };
 
-export const Piece = ({ id, position, handleMove, highlightedPiece, setHighlightedPiece, possibleMoves }: PieceProps) => {
+export const Piece = ({ id, position }: PieceProps) => {
+    const { handleMove, highlightedPiece, setHighlightedPiece, checkPossibleMove } = useGame();
     const originalX = useSharedValue(position.x);
     const originalY = useSharedValue(position.y);
     const translateX = useSharedValue(position.x);
@@ -63,10 +61,7 @@ export const Piece = ({ id, position, handleMove, highlightedPiece, setHighlight
         }
         else {
             const to = toPosition({ x: originalX.value, y: originalY.value });
-            const possibleMove = highlightedPiece?.piece === 'p' ? to : `${highlightedPiece?.piece.toLocaleUpperCase()}${to}`;
-            const possibleCapturingMove = highlightedPiece?.piece === 'p' ? `${highlightedPiece.from[0]}x${to}` : `${highlightedPiece?.piece.toLocaleUpperCase()}x${to}`;
-            const movesToCheck = [possibleMove, possibleCapturingMove, `${possibleMove}+`, `${possibleMove}#`, `${possibleCapturingMove}+`, `${possibleCapturingMove}#`]
-            if (movesToCheck.some(item => possibleMoves.includes(item))) {
+            if (checkPossibleMove(to)) {
                 runOnJS(handleMove)(highlightedPiece.from, to, resetPiecePosition);
             }
             else setHighlightedPiece(null);
