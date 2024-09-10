@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-
 import { runOnJS } from "react-native-reanimated";
+
 import { useGame } from "@/hooks/useGame";
 
 const colors = {
@@ -19,13 +19,17 @@ interface SquareProps {
 }
 
 const Square = ({ row, col }: SquareProps) => {
-    const { highlightedPiece, handleMove, setHighlightedPiece, setPossibleMoves, checkPossibleMove } = useGame();
+    const { highlightedPiece, handleMove, setHighlightedPiece, setPossibleMoves, checkPossibleMove, checkPossibleCapturingMove } = useGame();
     const offset = row % 2 === 0 ? 1 : 0;
     const bgColor = (col + offset) % 2 === 0 ? colors.WHITE : colors.BLACK;
     const textColor = (col + offset) % 2 === 0 ? colors.BLACK : colors.WHITE;
     const colChar = String.fromCharCode('a'.charCodeAt(0) + col);
     const squareName = `${colChar}${8 - row}`;
     const isPossibleMove = checkPossibleMove(squareName);
+    const isPossibleCapturingMove = checkPossibleCapturingMove(squareName);
+    const circleProps = isPossibleCapturingMove 
+        ? { borderRadius: 20, width: 40, height: 40 } 
+        : { borderRadius: 5, width: 10, height: 10 };
     const handlePress = () => {
         if(highlightedPiece) {
             if (isPossibleMove) {
@@ -50,7 +54,7 @@ const Square = ({ row, col }: SquareProps) => {
             }}>{8 -row}</Text>
             {isPossibleMove
                 ?   <View style={styles.circleRoot}>
-                        <View style={styles.circle} />
+                        <View style={[styles.circle, circleProps]} />
                     </View>
                 : null}
             <Text style={{
@@ -103,9 +107,6 @@ const styles = StyleSheet.create({
     },
     circle: {
         backgroundColor: 'rgba(0,0,0,.4)',
-        borderRadius: 5,
-        width: 10, 
-        height: 10,
         alignSelf: 'center',
     },
     circleRoot: {

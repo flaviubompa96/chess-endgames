@@ -18,7 +18,8 @@ interface GameContextProps {
     setPossibleMoves: (value: string[]) => void;
     handleMove: (from: string, to: string, resetPosition: () => void) => void;
     handlePromotingPiece: (piece: string) => void;
-    checkPossibleMove: (sqareName: string) => boolean;
+    checkPossibleMove: (to: string) => boolean;
+    checkPossibleCapturingMove: (to: string) => boolean;
 }
 
 const GameContext = createContext<GameContextProps>({
@@ -39,6 +40,7 @@ const GameContext = createContext<GameContextProps>({
     handleMove: () => {},
     handlePromotingPiece: () => {},
     checkPossibleMove: () => false,
+    checkPossibleCapturingMove: () => false,
 });
 
 const GameProvider = ({children}: {children: any}) => {
@@ -89,9 +91,9 @@ const GameProvider = ({children}: {children: any}) => {
       setIsPromoting(false);
     };
 
-    const checkPossibleMove = (squareName: string) => {
-      const possibleMove = highlightedPiece?.piece === 'p' ? squareName : `${highlightedPiece?.piece.toLocaleUpperCase()}${squareName}`;
-      const possibleCapturingMove = highlightedPiece?.piece === 'p' ? `${highlightedPiece.from[0]}x${squareName}` : `${highlightedPiece?.piece.toLocaleUpperCase()}x${squareName}`;
+    const checkPossibleMove = (to: string) => {
+      const possibleMove = highlightedPiece?.piece === 'p' ? to : `${highlightedPiece?.piece.toLocaleUpperCase()}${to}`;
+      const possibleCapturingMove = highlightedPiece?.piece === 'p' ? `${highlightedPiece.from[0]}x${to}` : `${highlightedPiece?.piece.toLocaleUpperCase()}x${to}`;
       const movesToCheck = [
         possibleMove, 
         possibleCapturingMove, 
@@ -102,6 +104,19 @@ const GameProvider = ({children}: {children: any}) => {
         `${possibleMove}=Q`,
         `${possibleMove}=Q+`,
         `${possibleMove}=Q#`,
+        `${possibleCapturingMove}=Q`,
+        `${possibleCapturingMove}=Q+`,
+        `${possibleCapturingMove}=Q#`,
+      ];
+      return movesToCheck.some(item => possibleMoves.includes(item));
+    }
+
+    const checkPossibleCapturingMove = (to: string) => {
+      const possibleCapturingMove = highlightedPiece?.piece === 'p' ? `${highlightedPiece.from[0]}x${to}` : `${highlightedPiece?.piece.toLocaleUpperCase()}x${to}`;
+      const movesToCheck = [
+        possibleCapturingMove, 
+        `${possibleCapturingMove}+`, 
+        `${possibleCapturingMove}#`,
         `${possibleCapturingMove}=Q`,
         `${possibleCapturingMove}=Q+`,
         `${possibleCapturingMove}=Q#`,
@@ -124,7 +139,8 @@ const GameProvider = ({children}: {children: any}) => {
             setPossibleMoves,
             handleMove,
             handlePromotingPiece,
-            checkPossibleMove
+            checkPossibleMove,
+            checkPossibleCapturingMove
         }}>
           {children}
         </GameContext.Provider>
